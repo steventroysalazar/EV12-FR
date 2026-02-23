@@ -88,6 +88,69 @@ export const EVIEW_COMMANDS: SMSCommand[] = [
     generateMessage: (p) => `mode${p.mode}`
   },
   {
+    id: "sos_button",
+    name: "SOS Button Mode",
+    category: "Alarms",
+    structure: "SOS(mode),(time)",
+    params: [
+      { name: "mode", label: "Trigger Type", type: "select", defaultValue: 1, options: [{ label: "Long Press", value: 1 }, { label: "Double Click", value: 2 }] },
+      { name: "time", label: "Press Time", type: "number", defaultValue: 20, suffix: "x0.1s", description: "20 = 2 seconds" }
+    ],
+    generateMessage: (p) => `SOS${p.mode},${p.time}`
+  },
+  {
+    id: "sos_loops",
+    name: "SOS Call Loops",
+    category: "Alarms",
+    structure: "Loop(time)",
+    params: [
+      { name: "time", label: "Cycles", type: "number", defaultValue: 5, description: "0=infinite, 1-10=times" }
+    ],
+    generateMessage: (p) => `Loop${p.time}`
+  },
+  {
+    id: "whitelist",
+    name: "SMS White List",
+    category: "Network",
+    structure: "sms(n)",
+    params: [
+      { name: "n", label: "Status", type: "select", defaultValue: 0, options: [{ label: "Off (All numbers)", value: 0 }, { label: "On (Authorized only)", value: 1 }] }
+    ],
+    generateMessage: (p) => `sms${p.n}`
+  },
+  {
+    id: "timezone",
+    name: "Set Time Zone",
+    category: "Basic",
+    structure: "tz(zone):(minute)",
+    params: [
+      { name: "zone", label: "Zone", type: "text", defaultValue: "+8", placeholder: "+8 or -5" },
+      { name: "min", label: "Minute Offset", type: "select", defaultValue: "00", options: [{ label: "00", value: "00" }, { label: "15", value: "15" }, { label: "30", value: "30" }, { label: "45", value: "45" }] }
+    ],
+    generateMessage: (p) => `tz${p.zone}:${p.min}`
+  },
+  {
+    id: "apn",
+    name: "Set APN",
+    category: "Network",
+    structure: "S1,(apn)",
+    params: [
+      { name: "apn", label: "APN Name", type: "text", placeholder: "e.g. internet" }
+    ],
+    generateMessage: (p) => `S1,${p.apn}`
+  },
+  {
+    id: "server",
+    name: "Set Server IP",
+    category: "Network",
+    structure: "IP1,(ip),(port)",
+    params: [
+      { name: "ip", label: "Server IP/Domain", type: "text", placeholder: "e.g. 1.2.3.4" },
+      { name: "port", label: "Port", type: "number", defaultValue: 6060 }
+    ],
+    generateMessage: (p) => `IP1,${p.ip},${p.port}`
+  },
+  {
     id: "status",
     name: "Check Status",
     category: "Monitoring",

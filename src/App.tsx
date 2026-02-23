@@ -39,6 +39,10 @@ export default function App() {
   const [isSending, setIsSending] = useState(false);
   const [lastResponse, setLastResponse] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
+  const rawMessage = selectedCommand.generateMessage(params);
+  const byteCount = new TextEncoder().encode(rawMessage).length;
+  const isOverLimit = byteCount > 150;
+
   useEffect(() => {
     fetchHistory();
     // Initialize params with default values
@@ -244,21 +248,32 @@ export default function App() {
 
             {/* Preview & Send */}
             <div className="space-y-4">
-              <div className="p-4 bg-[#141414] text-[#E4E3E0] rounded-lg font-mono text-xs overflow-hidden">
+              <div className={`p-4 rounded-lg font-mono text-xs overflow-hidden transition-colors ${isOverLimit ? "bg-red-900/20 border border-red-500/50 text-red-200" : "bg-[#141414] text-[#E4E3E0]"}`}>
                 <div className="flex justify-between items-center mb-2 opacity-40">
-                  <span>OUTGOING_SMS_PREVIEW</span>
-                  <Terminal className="w-3 h-3" />
+                  <span className="flex items-center gap-2">
+                    <Terminal className="w-3 h-3" />
+                    PROTOCOL_OUTPUT
+                  </span>
+                  <span className={`px-1.5 py-0.5 rounded ${isOverLimit ? "bg-red-500 text-white animate-pulse" : "bg-white/10"}`}>
+                    {byteCount} / 150 BYTES
+                  </span>
                 </div>
-                <div className="text-lg tracking-tight">
-                  {selectedCommand.generateMessage(params)}
+                <div className="text-lg tracking-tight break-all">
+                  {rawMessage}
                 </div>
+                {isOverLimit && (
+                  <div className="mt-2 text-[9px] uppercase font-bold text-red-400 flex items-center gap-1">
+                    <AlertTriangle className="w-2.5 h-2.5" />
+                    Warning: Protocol limit exceeded. SMS may be split.
+                  </div>
+                )}
               </div>
 
               <button
                 onClick={sendCommand}
-                disabled={isSending}
+                disabled={isSending || isOverLimit}
                 className={`w-full py-4 flex items-center justify-center gap-2 font-bold uppercase tracking-widest transition-all ${
-                  isSending 
+                  isSending || isOverLimit
                     ? "bg-[#D6D5D2] text-[#141414] cursor-not-allowed" 
                     : "bg-[#141414] text-[#E4E3E0] hover:bg-emerald-600 active:scale-[0.98]"
                 }`}
